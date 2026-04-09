@@ -1,50 +1,38 @@
 import io
-import json
-import os
-
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 
+SERVICE_ACCOUNT_FILE = "/etc/secrets/service_account.json"
 FOLDER_NAME = "Fiskars_Input"
 FILE_NAME = "input.xlsx"
 
 
 def download_file():
-    raw_json = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
-    if not raw_json:
-        raise ValueError("Переменная GOOGLE_SERVICE_ACCOUNT_JSON не задана")
-
-    service_account_info = json.loads(raw_json)
-
-    creds = service_account.Credentials.from_service_account_info(
-        service_account_info,
+    creds = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE,
         scopes=["https://www.googleapis.com/auth/drive"]
     )
 
     service = build("drive", "v3", credentials=creds)
 
     # Найти папку
-    folder_result = service.files().list(
-        q=f"name='{FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false",
+    folder = service.files().list(
+        q=f"name='{FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder'",
         fields="files(id, name)"
-    ).execute()
+    ).execute()["files"][0]
 
-    folders = folder_result.get("files", [])
-    if not folders:
-        raise FileNotFoundError(f"Папка '{FOLDER_NAME}' не найдена")
+    folder_id = folder["id"]
 
-    folder_id = folders[0]["id"]
-
-    # Найти файл в папке
-    files_result = service.files().list(
-        q=f"name='{FILE_NAME}' and '{folder_id}' in parents and trashed=false",
+    # Найти файл
+    files = service.files().list(
+        q=f"name='{FILE_NAME}' and '{folder_id}' in parents",
         fields="files(id, name)"
-    ).execute()
+    ).execute()["files"]
 
-    files = files_result.get("files", [])
     if not files:
-        raise FileNotFoundError(f"Файл '{FILE_NAME}' не найден в папке '{FOLDER_NAME}'")
+        print("❌ Файл не найден")
+        return
 
     file_id = files[0]["id"]
 
@@ -57,7 +45,7 @@ def download_file():
     while not done:
         _, done = downloader.next_chunk()
 
-    # Сохранить локально
+    # Сохранить
     with open("input.xlsx", "wb") as f:
         f.write(file_data.getvalue())
 
