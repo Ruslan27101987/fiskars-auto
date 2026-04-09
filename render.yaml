@@ -4,5 +4,5 @@ services:
     runtime: python
     plan: starter
     schedule: "0 7 * * *"
-    buildCommand: "pip install -r requirements.txt"
+    buildCommand: "pip install pandas openpyxl gspread oauth2client python-dotenv google-api-python-client google-auth google-auth-httplib2"
     startCommand: "python3 run_all.py"
