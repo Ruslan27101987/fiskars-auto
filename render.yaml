@@ -4,5 +4,5 @@ services:
     runtime: python
     plan: starter
     schedule: "0 7 * * *"
-    buildCommand: "pip install -r requirements.txt"
+    buildCommand: ""
     startCommand: "python3 auto_fiskars.py && (python3 send_foxtrot_file.py || true)"
