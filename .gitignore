@@ -3,3 +3,5 @@ service_account.json
 __pycache__/
 *.pyc
 .DS_Store
+*.csv
+input.xlsx
