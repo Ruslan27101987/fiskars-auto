@@ -1,7 +1,6 @@
 import subprocess
 import sys
 
-
 def run_script(script_name: str):
     print(f"\n🚀 Запуск: {script_name}")
     result = subprocess.run([sys.executable, script_name], capture_output=True, text=True)
