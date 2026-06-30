@@ -34,13 +34,6 @@ def process_file(file_path):
 
     df = df[df["Артикул"].ne("") & df["Цена"].notna()].copy().reset_index(drop=True)
 
-    def calc_avbt(qty):
-        if qty == 0:
-            return 0
-        elif qty <= 20:
-            return 1
-        return 2
-
     today = datetime.now().strftime("%Y%m%d")
     now_time = datetime.now().strftime("%H%M%S")
 
@@ -58,7 +51,7 @@ def process_file(file_path):
     out["qty"] = ""
     out["price"] = (df["Цена"] * 0.75).round(2)
     out["price_RIP"] = df["Цена"]
-    out["avbt"] = df["Количество"].apply(calc_avbt)
+    out["avbt"] = df["Количество"].fillna(0).astype(int)
     out["CurrencyId"] = CURRENCY
     out["Part_number"] = df["Артикул"]
 
