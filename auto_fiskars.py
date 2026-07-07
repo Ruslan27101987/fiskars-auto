@@ -48,7 +48,7 @@ def process_file(file_path):
     out["barcode"] = df["Штрихкод"]
     out["UCGFEA"] = df["Код УКТ ВЭД"]
     out["warranty"] = df["Гарантийный срок, мес."]
-    out["qty"] = ""
+    out["qty"] = df["Количество"].fillna(0).astype(int)
     out["price"] = (df["Цена"] * 0.75).round(2)
     out["price_RIP"] = df["Цена"]
     out["avbt"] = df["Количество"].fillna(0).astype(int)
