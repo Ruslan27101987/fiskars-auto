@@ -51,7 +51,7 @@ def process_file(file_path):
     out["qty"] = df["Количество"].fillna(0).astype(int)
     out["price"] = (df["Цена"] * 0.75).round(2)
     out["price_RIP"] = df["Цена"]
-    out["avbt"] = df["Количество"].fillna(0).astype(int)
+    out["avbt"] = ""
     out["CurrencyId"] = CURRENCY
     out["Part_number"] = df["Артикул"]
 
